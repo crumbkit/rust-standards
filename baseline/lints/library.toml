@@ -1,0 +1,12 @@
+# The lints that the library profile adds to lints/base.toml.
+
+[workspace.lints.rust]
+missing_docs = "deny" # LIB-2
+
+[workspace.lints.rustdoc]
+broken_intra_doc_links = "deny" # LIB-2
+
+[workspace.lints.clippy]
+missing_errors_doc = "deny" # LIB-2
+missing_panics_doc = "deny" # LIB-2
+must_use_candidate = "deny" # LIB-3

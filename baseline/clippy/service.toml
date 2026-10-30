@@ -1,0 +1,8 @@
+# The clippy.toml entries that the service profile adds (SVC-1).
+
+disallowed-methods = [
+    { path = "std::thread::spawn", reason = "spawn through the task owner, which joins or aborts" },
+    { path = "tokio::spawn", reason = "spawn through the task owner, which joins or aborts", allow-invalid = true },
+    { path = "tokio::task::spawn", reason = "spawn through the task owner, which joins or aborts", allow-invalid = true },
+    { path = "tokio::task::spawn_blocking", reason = "spawn through the task owner, which joins or aborts", allow-invalid = true },
+]

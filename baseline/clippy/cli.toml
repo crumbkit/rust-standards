@@ -1,0 +1,7 @@
+# The clippy.toml entries that the cli profile adds (CLI-1).
+
+disallowed-methods = [
+    { path = "std::io::stdout", reason = "write through the output module" },
+    { path = "std::io::stderr", reason = "write through the output module" },
+    { path = "std::io::stdin", reason = "read through the output module, which knows whether input is a terminal" },
+]

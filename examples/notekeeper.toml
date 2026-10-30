@@ -1,0 +1,53 @@
+# A worked example: the adoption map of notekeeper, a made-up command-line
+# program that keeps notes in files under the user's data directory. Every
+# path and value here is illustrative.
+
+schema = "rust-standards/adoption/v1"
+standards = { version = "0.1.0", commit = "the commit of rust-standards this map was reviewed against" }
+
+# notekeeper is a command-line program, it opens the user's editor, and it
+# writes note files that must survive a crash.
+profiles = ["base", "cli", "child-process", "durable-state"]
+
+[[binding]]
+rule = "BASE-6"
+owners = ["src/environment.rs"]
+checks = [
+  "clippy disallowed_methods (clippy.toml)",
+  "the catalog test in src/environment/tests.rs (BASE-28)",
+]
+note = "main reads the environment once into Environment, which every command takes."
+
+[[binding]]
+rule = "PROC-1"
+owners = ["src/editor.rs"]
+checks = ["clippy disallowed_methods (clippy.toml)"]
+note = "Opening the editor is the one subprocess operation. It hands the terminal to the editor through crumbkit_child::hand_over, and stops only the editor itself, not its descendants."
+
+[[binding]]
+rule = "DUR-1"
+owners = ["src/store/write.rs"]
+checks = ["the interrupted-write tests in src/store/write/tests.rs"]
+note = "Every note and index write goes through store::write::replace."
+
+[[decision]]
+id = "lanes"
+requirement = """
+- Lane: `lane` in .github/workflows/ci.yml, on each pull request and each push to main. It runs every step of the pull-request lane except `doctests`, `rustdoc` and `features`, because notekeeper has no library target. Its budget is ten minutes, the job's timeout. A merge waits for it.
+- Lane: `advisories` in .github/workflows/ci.yml, daily at 06:43 UTC and on each push to main. Nothing waits for it, and the release workflow runs it again before it builds.
+"""
+reason = "The pull-request lane stays fast. A daily advisory run catches an advisory published against a dependency already on main, and finding it after merge is safe because the release workflow refuses to build until it passes."
+realizations = [".github/workflows/ci.yml", ".github/workflows/release.yml"]
+
+[[decision]]
+id = "release-profile"
+requirement = "`[profile.release]` sets `overflow-checks = true`, `lto = \"thin\"`, `codegen-units = 1` and `strip = \"symbols\"`."
+reason = "notekeeper ships prebuilt binaries, so a smaller and faster binary is worth a slower release build."
+realizations = ["Cargo.toml"]
+
+[[exception]]
+rule = "BASE-21"
+paths = ["src/store/index.rs"]
+owner = "Luke Randall"
+reason = "The index module had 1,240 lines when notekeeper adopted the standards."
+correction = "Split the index into its reader and its writer when it next changes substantially."

@@ -1,0 +1,16 @@
+# The clippy.toml entries that the durable-state profile adds. The atomic
+# writer (DUR-1) and the lock module (DUR-2) suppress them with #[expect].
+
+disallowed-methods = [
+    # DUR-1
+    { path = "std::fs::write", reason = "write through the atomic writer" },
+    { path = "std::fs::copy", reason = "write through the atomic writer" },
+    { path = "std::fs::rename", reason = "write through the atomic writer" },
+    { path = "std::fs::File::create", reason = "write through the atomic writer" },
+    { path = "std::fs::OpenOptions::new", reason = "write through the atomic writer" },
+    # DUR-2
+    { path = "std::fs::File::lock", reason = "lock through the lock module, which owns the deadline" },
+    { path = "std::fs::File::try_lock", reason = "lock through the lock module, which owns the deadline" },
+    { path = "std::fs::File::lock_shared", reason = "lock through the lock module, which owns the deadline" },
+    { path = "std::fs::File::try_lock_shared", reason = "lock through the lock module, which owns the deadline" },
+]

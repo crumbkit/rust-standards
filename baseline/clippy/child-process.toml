@@ -1,0 +1,20 @@
+# The clippy.toml entries that the child-process profile adds. The process
+# module (PROC-1) suppresses them with #[expect].
+
+disallowed-methods = [
+    # PROC-1
+    { path = "std::process::Command::new", reason = "start processes through the process module" },
+    { path = "std::process::Command::spawn", reason = "start processes through the process module" },
+    { path = "std::process::Command::status", reason = "start processes through the process module" },
+    { path = "std::process::Command::output", reason = "start processes through the process module" },
+    { path = "std::os::unix::process::CommandExt::exec", reason = "replacing this process bypasses the process module" },
+    { path = "tokio::process::Command::new", reason = "start processes through the process module", allow-invalid = true },
+    { path = "tokio::process::Command::spawn", reason = "start processes through the process module", allow-invalid = true },
+    { path = "tokio::process::Command::status", reason = "start processes through the process module", allow-invalid = true },
+    { path = "tokio::process::Command::output", reason = "start processes through the process module", allow-invalid = true },
+]
+
+disallowed-types = [
+    # PROC-1
+    { path = "std::process::Child", reason = "let the process module hold the child, which owns its deadline and cleanup" },
+]

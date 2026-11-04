@@ -49,7 +49,7 @@ crumbkit does not cover.
 | ID | Rule | Where it applies |
 | --- | --- | --- |
 | CLI-9 | A command or flag has one spelling. A removed name stays as a hidden alias, or fails with a code that names its replacement. Help, the command reference and any agent skill change in the same pull request as the command. | `**` |
-| CLI-10 | A secret is never a command-line argument. The program reads it from the environment, a file or a prompt. | `**/*.rs`, `**/*.sh`, `bin/**`, `.github/workflows/**`, `**/Dockerfile*`, `**/*.md` |
+| CLI-10 | A secret is never a command-line argument. The program reads it from the environment, a file or a prompt. | `**/*.rs`, `**/*.sh`, `bin/**`, `scripts/**`, `**/Makefile`, `**/[Jj]ustfile`, `.github/workflows/**`, `**/Dockerfile*`, `**/*.md` |
 
 ## Reasons
 

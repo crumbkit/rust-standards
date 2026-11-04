@@ -111,14 +111,19 @@ Every rule names its check. The tiers run from cheapest to most expensive.
 
 Each `review` rule lists, in its "Where it applies" column, glob patterns
 for the files whose changes it concerns. A pattern is relative to the
-project's root. `**` matches every file, `**/` matches any number of
-directories including none, and `*` matches any characters within one path
-segment. The column uses only `*`, `**`, and literal characters; `?`,
-`[...]` and `{...}` do not appear in it.
+project's root. `**` alone matches every file. `**/` matches any number of
+directories, including none. A trailing `/**`, as in `scripts/**`, matches
+every file under that directory at any depth. `*` matches any characters
+within one path segment, and `[Jj]` matches one of the characters it lists.
+The column uses only `*`, `**`, `[...]` and literal characters; `?` and
+`{...}` do not appear in it.
 
-A tool may read a pattern more widely, and never more narrowly. Board
-reads each pattern as an SQLite `GLOB`, in which `*` also matches `/`, so
-`crates/*.rs` also matches `crates/store/src/lib.rs`.
+A tool may read a pattern more widely, and never more narrowly. Board's
+generator expands each `**/` into two patterns before matching, one with
+nothing in its place and one with `*/`, so `**/tests.rs` becomes
+`tests.rs` and `*/tests.rs`. Board then reads each pattern as an SQLite
+`GLOB`, in which `*` also matches `/`, so `crates/*.rs` also matches
+`crates/store/src/lib.rs`.
 
 - A tool can use the column to give an author only the rules for the files
   a change edits. Board's `controls.from-standards` turns each such rule into

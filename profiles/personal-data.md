@@ -28,10 +28,10 @@ an export or a request to another service.
 
 ## review
 
-| ID | Rule |
-| --- | --- |
-| PII-8 | An error or a refusal never holds a personal value in its message. A refusal of personal input names the field and the kind of value. An error that keeps a response body or refused input keeps it in a wrapper type. |
-| PII-9 | The repository holds no real personal data. Fixtures, seeds, mocks and recorded requests use synthetic values. A test phone number comes from a range reserved for fiction, such as Ofcom's +44 7700 900000 to +44 7700 900999. |
+| ID | Rule | Where it applies |
+| --- | --- | --- |
+| PII-8 | An error or a refusal never holds a personal value in its message. A refusal of personal input names the field and the kind of value. An error that keeps a response body or refused input keeps it in a wrapper type. | `**/*.rs` |
+| PII-9 | The repository holds no real personal data. Fixtures, seeds, mocks and recorded requests use synthetic values. A test phone number comes from a range reserved for fiction, such as Ofcom's +44 7700 900000 to +44 7700 900999. | `**` |
 
 Parsing a personal value into its type where it enters the program, and
 taking that type everywhere inside, follows from BASE-32 and BASE-42.

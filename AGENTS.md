@@ -2,7 +2,8 @@
 
 [README.md](README.md) indexes the repository.
 
-- A rule is one table row: its ID, its statement and its check.
+- A rule is one table row: its ID, its statement and its check. A `review`
+  rule's row also says where it applies (README.md).
 - A rule names the cheapest check tier that can enforce it (README.md).
 - A rule gives a reason only when the reason is not obvious. Long reasons go
   in the profile's Reasons section.

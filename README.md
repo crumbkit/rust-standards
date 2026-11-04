@@ -10,7 +10,7 @@ The rules are a draft. Nothing here is versioned or tagged yet.
 ## Index
 
 ```text
-README.md                      profiles, lanes, check tiers, versions
+README.md                      profiles, lanes, check tiers, where rules apply, versions
 AGENTS.md                      rules for editing this repository
 adoption.md                    the rust-standards.toml format
 profiles/
@@ -106,6 +106,22 @@ Every rule names its check. The tiers run from cheapest to most expensive.
   itself. Each project will pin the command at that version, so a new
   version of the check never changes another project's result. Until it
   ships, a reviewer checks each `drift` rule against the project's files.
+
+## Where a rule applies
+
+Each `review` rule lists, in its "Where it applies" column, glob patterns
+for the files whose changes it concerns. A pattern is relative to the
+project's root. `**` matches every file, `**/` matches any number of
+directories including none, and `*` matches characters within one path
+segment.
+
+- A tool can use the column to give an author only the rules for the files
+  a change edits. Board's `controls.from-standards` turns each such rule into
+  a control on those files.
+- A pattern may cover more files than the rule concerns, and never fewer. A
+  rule whose reach is unclear applies to `**`.
+- A rule in a cheaper tier has no column, because its check names the rule
+  when it fails.
 
 ## Versions
 

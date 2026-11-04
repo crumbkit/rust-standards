@@ -13,7 +13,7 @@ open, and where it breaks a rule.
 | `schema` | `"rust-standards/adoption/v1"` | yes |
 | `standards` | `version`, and the `commit` of this repository that the map was last reviewed against | yes |
 | `profiles` | the adopted profiles, always including `"base"` | yes |
-| `[[binding]]` | `rule`, `owners` (files), `checks`, `note`: where the project meets a rule | for BASE-24 when the project calls `expose_secret`; for PII-7 when it adopts `personal-data`; for SVC-12, naming the owner of each external store or service, when it adopts `service`; for DDB-1 when it adopts `dynamodb`, and for DDB-3 when a batch job scans; optional for any other rule |
+| `[[binding]]` | `rule`, `owners` (files), `checks`, `note`: where the project meets a rule | for BASE-24 when the project calls `expose_secret`; optional for any other rule |
 | `[[decision]]` | a choice that a rule leaves to the project | see below |
 | `[[exception]]` | `rule`, `paths`, `items`, `owner`, `reason`, `correction` | for each place that breaks a rule |
 
@@ -37,8 +37,6 @@ decision as a control without renaming them.
 | `lanes` | always (BASE-25) | each lane: what runs, its trigger, what waits for it, and the pull-request lane's time budget |
 | `unsafe` | the project uses `unsafe` (BASE-3) | the modules that use it and the invariant each one upholds |
 | `release-profile` | the project ships a binary (BASE-27) | the `lto`, `codegen-units` and `strip` settings of `[profile.release]` |
-| `shutdown` | the project adopts `deployed` (DEP-5) | the drain deadline and the platform's stop timeout |
-| `request-cap` | the project adopts `deployed` and serves traffic (DEP-8) | the cap per instance and the load test it came from, or, until a measurement exists, that the cap is owed |
 
 - A merge waits for a check only when branch protection requires it. The
   `lanes` decision names the required checks, and a reviewer compares them

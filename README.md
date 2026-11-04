@@ -21,7 +21,8 @@ profiles/
 ├── child-process.md           PROC-*  projects that start other programs
 ├── durable-state.md           DUR-*   files that must survive a crash or an upgrade
 ├── deployed.md                DEP-*   programs that run as long-lived hosted containers
-└── control-plane.md           CP-*    programs that drive resources toward a desired state
+├── control-plane.md           CP-*    programs that drive resources toward a desired state
+└── personal-data.md           PII-*   projects that handle personal data
 baseline/
 ├── lints/base.toml            [workspace.lints] for every project
 ├── lints/library.toml         lints that the library profile adds
@@ -98,10 +99,12 @@ Every rule names its check. The tiers run from cheapest to most expensive.
 
 - A rule uses the cheapest tier that can check it.
 - A `review` rule moves to a cheaper tier as soon as a tool can check it.
-- No drift check ships with these standards yet. Until one does, a reviewer
-  checks each `drift` rule against the project's files. The rules are written
-  so that a script can check them, and the first project that needs one
-  writes it here.
+- No drift check ships with these standards yet, and one is planned. It
+  will be a command in this repository that compares a project's files with
+  the baseline of the version that the project's map names, and with the map
+  itself. Each project will pin the command at that version, so a new
+  version of the check never changes another project's result. Until it
+  ships, a reviewer checks each `drift` rule against the project's files.
 
 ## Versions
 

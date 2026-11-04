@@ -67,7 +67,7 @@ Every project follows these rules.
 | BASE-33 | Make policy testable without performing its effects. Put an effect behind a narrow trait only when a test double makes a meaningful test possible. | `**/*.rs` |
 | BASE-34 | Give every read a size limit, every retry a count, and each operation one deadline that covers all its steps. | `**/*.rs`, `**/*.toml`, `**/*.yaml`, `**/*.yml`, `.github/workflows/**` |
 | BASE-35 | A test that involves time starts its deadline after its fixture is ready, injects the clock when it tests a deadline or expiry, and never compares `.elapsed()` with an upper bound. A test of a timed wait on a real event (BASE-11) triggers the event or the cancellation, and tests the timeout with a short configured value. It never waits out the full real timeout, so such a wait takes its timeout as a parameter or configuration value with the named constant as its default. | `**/*.rs` |
-| BASE-36 | Name each test with a sentence that states the behaviour it checks. | `**/tests.rs`, `**/tests/**`, `benches/**` |
+| BASE-36 | Name each test with a sentence that states the behaviour it checks. | `**/tests.rs`, `**/tests/**`, `**/benches/**` |
 | BASE-37 | A comment states an invariant, a limit or a reason, and never history. A deliberate shortcut carries a comment that says what it misses and what replaces it. | `**` |
 | BASE-38 | Add code only when removing code cannot make the change. Add an abstraction only when it removes two copies or another rule needs it. | `**` |
 | BASE-39 | Use a standard format or a maintained tool before writing a new one. | `**` |

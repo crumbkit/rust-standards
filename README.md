@@ -114,9 +114,13 @@ for the files whose changes it concerns. A pattern is relative to the
 project's root. `**` alone matches every file. `**/` matches any number of
 directories, including none. A trailing `/**`, as in `scripts/**`, matches
 every file under that directory at any depth. `*` matches any characters
-within one path segment, and `[Jj]` matches one of the characters it lists.
-The column uses only `*`, `**`, `[...]` and literal characters; `?` and
-`{...}` do not appear in it.
+within one path segment. A set such as `[Jj]` matches one of the
+characters it lists, and a set may hold a range such as `[a-z]`. A set is
+never negated, with `[!...]` or `[^...]`, because tools disagree on which
+form negates: SQLite's `GLOB` reads `[^...]` as a negation and `[!...]` as
+a literal set, while shells and gitignore negate with `[!...]`. The column
+uses only `*`, `**`, sets and literal characters; `?` and `{...}` do not
+appear in it.
 
 A tool may read a pattern more widely, and never more narrowly. Board's
 generator expands each `**/` into two patterns before matching, one with

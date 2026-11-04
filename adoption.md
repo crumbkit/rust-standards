@@ -13,7 +13,7 @@ open, and where it breaks a rule.
 | `schema` | `"rust-standards/adoption/v1"` | yes |
 | `standards` | `version`, and the `commit` of this repository that the map was last reviewed against | yes |
 | `profiles` | the adopted profiles, always including `"base"` | yes |
-| `[[binding]]` | `rule`, `owners` (files), `checks`, `note`: where the project meets a rule | for BASE-24 when the project calls `expose_secret`; optional for any other rule |
+| `[[binding]]` | `rule`, `owners` (files), `checks`, `note`: where the project meets a rule | for BASE-24 when the project calls `expose_secret`; for SVC-12, naming the owner of each external store or service, when it adopts `service`; optional for any other rule |
 | `[[decision]]` | a choice that a rule leaves to the project | see below |
 | `[[exception]]` | `rule`, `paths`, `items`, `owner`, `reason`, `correction` | for each place that breaks a rule |
 

@@ -17,6 +17,7 @@ profiles/
 ├── base.md                    BASE-*  every project
 ├── cli.md                     CLI-*   programs that people or agents run from a shell
 ├── library.md                 LIB-*   crates that other crates depend on
+├── service.md                 SVC-*   network services
 ├── child-process.md           PROC-*  projects that start other programs
 └── durable-state.md           DUR-*   files that must survive a crash or an upgrade
 baseline/

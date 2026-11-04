@@ -1,0 +1,10 @@
+# The clippy.toml entries that the dynamodb profile adds (DDB-3). A batch job
+# that scans suppresses them with #[expect], and the map's DDB-3 binding
+# lists its files.
+
+disallowed-methods = [
+    { path = "aws_sdk_dynamodb::Client::scan", reason = "query through the key layout; only a batch job scans", allow-invalid = true },
+    { path = "aws_sdk_dynamodb::Client::execute_statement", reason = "a PartiQL statement can run a scan and bypasses the key layout", allow-invalid = true },
+    { path = "aws_sdk_dynamodb::Client::batch_execute_statement", reason = "a PartiQL statement can run a scan and bypasses the key layout", allow-invalid = true },
+    { path = "aws_sdk_dynamodb::Client::execute_transaction", reason = "a PartiQL statement can run a scan and bypasses the key layout", allow-invalid = true },
+]

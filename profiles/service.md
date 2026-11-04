@@ -7,6 +7,7 @@ A project adopts this profile when it serves network traffic.
 | ID | Rule | Check |
 | --- | --- | --- |
 | SVC-1 | One module spawns tasks and threads, and every task or thread has an owner that joins or aborts it. | [baseline/clippy/service.toml](../baseline/clippy/service.toml) |
+| SVC-12 | Give each external store or service, such as a database, a queue, an object store or a third-party API, one owning module or crate. Only the owner uses that store's SDK client or driver, and the owner's public items name no SDK type. Callers use typed operations that the owner names for their access pattern, such as `take_ticket` or `tickets_in_queue`. No code outside the owner builds a key, an expression, a query or a raw request for the store. The map's SVC-12 binding names the owner of each store. | `disallowed_types` and `disallowed_methods` on the SDK's client types and constructors, which the owner suppresses with `#[expect]` ([baseline/clippy/service.toml](../baseline/clippy/service.toml)); in a workspace of several crates, a `bans.deny` entry for the SDK crate whose `wrappers` lists only the owning crate, so `cargo deny check bans` fails when another crate depends on it ([baseline/deny.toml](../baseline/deny.toml)) |
 
 ## test
 
@@ -46,6 +47,17 @@ A project adopts this profile when it serves network traffic.
   operation twice. A key that holds a secret or personal data leaks it into
   every log line that records the key. Echoing a refused key copies
   untrusted text into logs and responses.
+- SVC-12: BASE-5 already gives the network one owner, and BASE-51 gives
+  outbound HTTP one client. SVC-12 adds two requirements: callers use
+  operations named for access patterns, and a dependency check holds across
+  crates.
+  When each caller builds its own requests, a change to the store's key
+  layout must find every caller, and the store's access patterns are known
+  only by reading all the code. The owner's typed operations list every
+  access pattern in one place, and a test double can replace them
+  (BASE-33). A crate that depends on the SDK crate directly can call it
+  without crossing the owner, and a per-crate lint table does not see that
+  dependency, so `cargo deny` checks it.
 - SVC-11: A filter that each query adds by hand is missed in one query
   sooner or later, and that query returns every tenant's rows. A type that
   only the authentication layer builds makes the compiler find the missing

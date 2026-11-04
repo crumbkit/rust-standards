@@ -31,10 +31,10 @@ A project adopts this profile when other crates depend on it.
 
 ## review
 
-| ID | Rule |
-| --- | --- |
-| LIB-8 | The library keeps no global state. |
-| LIB-9 | Mark a public struct or enum `#[non_exhaustive]` from its first release when it may gain a field or a variant, and give such a struct a constructor or a builder. Leave an enum unmarked when the domain fixes its cases, such as a compass direction. |
+| ID | Rule | Where it applies |
+| --- | --- | --- |
+| LIB-8 | The library keeps no global state. | `**/*.rs` |
+| LIB-9 | Mark a public struct or enum `#[non_exhaustive]` from its first release when it may gain a field or a variant, and give such a struct a constructor or a builder. Leave an enum unmarked when the domain fixes its cases, such as a compass direction. | `**/*.rs` |
 
 ## Reasons
 

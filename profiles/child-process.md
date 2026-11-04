@@ -27,6 +27,6 @@ PROC-2's items:
 
 ## review
 
-| ID | Rule |
-| --- | --- |
-| PROC-3 | Never describe a deadline or an argument allowlist as isolation. A module that stops only its direct child, and not the child's descendants, says so. |
+| ID | Rule | Where it applies |
+| --- | --- | --- |
+| PROC-3 | Never describe a deadline or an argument allowlist as isolation. A module that stops only its direct child, and not the child's descendants, says so. | `**/*.rs`, `**/*.md` |

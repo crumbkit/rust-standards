@@ -23,11 +23,11 @@ A project adopts this profile when it serves network traffic.
 
 ## review
 
-| ID | Rule |
-| --- | --- |
-| SVC-7 | Each outbound call takes its timeout from what remains of the inbound request's deadline. A retry has a count and backs off. |
-| SVC-8 | No async task makes a blocking call. Blocking work runs through `spawn_blocking` in the task owner (SVC-1) or through the owner of its effect (BASE-5). Every channel and queue is bounded. A future used in `select!` is cancel-safe, or a comment says why it need not be. |
-| SVC-9 | Log through `tracing`, with each value as a structured field. Each request has a span that holds its ID. Every `#[instrument]` attribute uses `skip_all` and names the fields it records. A service whose deployment collects metrics exports request rate, error count and latency. |
+| ID | Rule | Where it applies |
+| --- | --- | --- |
+| SVC-7 | Each outbound call takes its timeout from what remains of the inbound request's deadline. A retry has a count and backs off. | `**/*.rs`, `**/*.toml`, `**/*.yaml`, `**/*.yml` |
+| SVC-8 | No async task makes a blocking call. Blocking work runs through `spawn_blocking` in the task owner (SVC-1) or through the owner of its effect (BASE-5). Every channel and queue is bounded. A future used in `select!` is cancel-safe, or a comment says why it need not be. | `**/*.rs` |
+| SVC-9 | Log through `tracing`, with each value as a structured field. Each request has a span that holds its ID. Every `#[instrument]` attribute uses `skip_all` and names the fields it records. A service whose deployment collects metrics exports request rate, error count and latency. | `**/*.rs` |
 
 ## Reasons
 

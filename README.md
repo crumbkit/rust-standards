@@ -10,7 +10,7 @@ The rules are a draft. Nothing here is versioned or tagged yet.
 ## Index
 
 ```text
-README.md                      profiles, lanes, check tiers, versions
+README.md                      profiles, lanes, check tiers, where rules apply, versions
 AGENTS.md                      rules for editing this repository
 adoption.md                    the rust-standards.toml format
 profiles/
@@ -106,6 +106,36 @@ Every rule names its check. The tiers run from cheapest to most expensive.
   itself. Each project will pin the command at that version, so a new
   version of the check never changes another project's result. Until it
   ships, a reviewer checks each `drift` rule against the project's files.
+
+## Where a rule applies
+
+Each `review` rule lists, in its "Where it applies" column, glob patterns
+for the files whose changes it concerns. A pattern is relative to the
+project's root. `**` alone matches every file. `**/` matches any number of
+directories, including none. A trailing `/**`, as in `scripts/**`, matches
+every file under that directory at any depth. `*` matches any characters
+within one path segment. A set such as `[Jj]` matches one of the
+characters it lists, and a set may hold a range such as `[a-z]`. A set is
+never negated, with `[!...]` or `[^...]`, because tools disagree on which
+form negates: SQLite's `GLOB` reads `[^...]` as a negation and `[!...]` as
+a literal set, while shells and gitignore negate with `[!...]`. The column
+uses only `*`, `**`, sets and literal characters; `?` and `{...}` do not
+appear in it.
+
+A tool may read a pattern more widely, and never more narrowly. Board's
+generator expands each `**/` into two patterns before matching, one with
+nothing in its place and one with `*/`, so `**/tests.rs` becomes
+`tests.rs` and `*/tests.rs`. Board then reads each pattern as an SQLite
+`GLOB`, in which `*` also matches `/`, so `crates/*.rs` also matches
+`crates/store/src/lib.rs`.
+
+- A tool can use the column to give an author only the rules for the files
+  a change edits. Board's `controls.from-standards` turns each such rule into
+  a control on those files.
+- A pattern may cover more files than the rule concerns, and never fewer. A
+  rule whose reach is unclear applies to `**`.
+- A rule in a cheaper tier has no column, because its check names the rule
+  when it fails.
 
 ## Versions
 

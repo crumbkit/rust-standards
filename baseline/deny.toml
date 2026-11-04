@@ -32,6 +32,11 @@ ignore = true
 multiple-versions = "warn"
 wildcards = "deny"
 allow-wildcard-paths = true
+# SVC-12: a service whose workspace has several crates bans each store's SDK
+# crate outside the crate that owns the store, such as
+# { crate = "aws-sdk-dynamodb", wrappers = ["ticket-store"], reason = "SVC-12: only ticket-store uses DynamoDB" }.
+# A third-party crate that depends on the SDK crate is listed in `wrappers` too.
+deny = []
 
 [sources]
 unknown-registry = "deny"

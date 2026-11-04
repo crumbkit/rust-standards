@@ -22,7 +22,8 @@ profiles/
 ├── durable-state.md           DUR-*   files that must survive a crash or an upgrade
 ├── deployed.md                DEP-*   programs that run as long-lived hosted containers
 ├── control-plane.md           CP-*    programs that drive resources toward a desired state
-└── personal-data.md           PII-*   projects that handle personal data
+├── personal-data.md           PII-*   projects that handle personal data
+└── dynamodb.md                DDB-*   projects that store data in DynamoDB
 baseline/
 ├── lints/base.toml            [workspace.lints] for every project
 ├── lints/library.toml         lints that the library profile adds

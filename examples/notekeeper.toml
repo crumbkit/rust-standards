@@ -36,13 +36,13 @@ requirement = """
 - Lane: `lane` in .github/workflows/ci.yml, on each pull request and each push to main. It runs every step of the pull-request lane except `doctests`, `rustdoc` and `features`, because notekeeper has no library target. Its budget is ten minutes, the job's timeout. A merge waits for it.
 - Lane: `advisories` in .github/workflows/ci.yml, daily at 06:43 UTC and on each push to main. Nothing waits for it, and the release workflow runs it again before it builds.
 """
-reason = "The pull-request lane stays fast. A daily advisory run catches an advisory published against a dependency already on main, and finding it after merge is safe because the release workflow refuses to build until it passes."
+purpose = "The pull-request lane stays fast. A daily advisory run catches an advisory published against a dependency already on main, and finding it after merge is safe because the release workflow refuses to build until it passes."
 realizations = [".github/workflows/ci.yml", ".github/workflows/release.yml"]
 
 [[decision]]
 id = "release-profile"
 requirement = "`[profile.release]` sets `overflow-checks = true`, `lto = \"thin\"`, `codegen-units = 1` and `strip = \"symbols\"`."
-reason = "notekeeper ships prebuilt binaries, so a smaller and faster binary is worth a slower release build."
+purpose = "notekeeper ships prebuilt binaries, so a smaller and faster binary is worth a slower release build."
 realizations = ["Cargo.toml"]
 
 [[exception]]

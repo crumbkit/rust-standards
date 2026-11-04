@@ -39,6 +39,10 @@ crumbkit does not cover.
 | CLI-6 | The program's tests run every crumbkit-test check that applies to it: `check_names`, `check_grammar`, `check_filters`, `check_help_sizes`, `check_help_goldens`, `check_path_weights`, `check_exit_codes`, `check_output_budget`, `check_command_reference` and `check_opt_outs` beside the checks named above. Each opt-out is an `Allow` with a reason, and `check_opt_outs` pins the list in a golden file. | the crumbkit-test checks |
 | CLI-7 | The program keeps a crumbkit-usage log, started first in `main`, and mounts `self usage`. | a test that a run appends one line to a log in a temporary directory |
 | CLI-8 | When standard output closes, such as under `head`, the program stops without a panic or an error message. Ctrl-C stops the program, removes any file it was partway through writing, and exits with code 130. | a test for each case |
+| CLI-11 | Output is the same at a terminal and in a pipe. The exceptions are the ones that crumbkit's [OUTPUT-1](https://github.com/crumbkit/crumbkit/blob/main/docs/standards/README.md) lists, such as colour, progress, prompts and the width of a text table. | a test that runs each example at a pseudo-terminal and in a pipe and compares the bytes |
+| CLI-12 | Every prompt has a flag that answers it, such as `--yes`. Without a terminal on standard input, or with `--no-input`, a command that would prompt fails with a code that names the flag. | `check_effects`, and a test that runs each prompting command without a terminal |
+| CLI-13 | Each exit code other than 0 is declared in the program's `Guide` with the failures that produce it, so `help exit-codes` documents it. | `check_exit_codes` |
+| CLI-14 | The program prints no colour when `NO_COLOR` is set to a non-empty value. | a test that runs a command that prints colour at a pseudo-terminal with `NO_COLOR=1` and finds no escape codes |
 
 ## review
 
@@ -61,3 +65,8 @@ crumbkit does not cover.
   test for it. Rust ignores SIGPIPE, so a write to a closed pipe returns an
   error that `println!` turns into a panic.
 - CLI-10: Other processes on the machine can read a process's arguments.
+- CLI-11: A script or an agent reads the output through a pipe, so it must
+  see what a person sees at a terminal. A golden file recorded in a pipe
+  then also holds at a terminal.
+- CLI-12: A prompt with no flag blocks a script or an agent, which has no
+  terminal to answer it.

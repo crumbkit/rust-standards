@@ -26,7 +26,7 @@ crumbkit does not cover.
 
 | ID | Rule | Check |
 | --- | --- | --- |
-| CLI-1 | One output module owns standard input, output and error, and reaches them through crumbkit's `Output`. Results go to standard output and diagnostics to standard error. | `print_stdout`, `print_stderr`, [baseline/clippy/cli.toml](../baseline/clippy/cli.toml) |
+| CLI-1 | One output module owns standard input, output and error, and reaches them through crumbkit's `Output`. Results go to standard output and diagnostics to standard error. | `print_stdout`, `print_stderr`, [baseline/clippy/base.toml](../baseline/clippy/base.toml) |
 
 ## test
 

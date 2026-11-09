@@ -80,10 +80,11 @@ in a change of its own.
 3. Handle each firing in one of three ways. Fix the code, keep the code with
    `#[expect(lint, reason = "...")]`, or weaken the lint in the project's
    table and record the weakening as an exception. For BASE-56 the attribute
-   goes on a `let` statement that holds the match, or on a statement or tail
-   expression that begins with the match or is a plain call, method call,
-   `return` or `if`, and never on an arm. Any other form first binds the
-   match with `let`, and the attribute goes on that `let`.
+   goes on the statement that holds the match, or on the tail expression when
+   the match is in a function's tail, and never on an arm. When the compiler
+   refuses the attribute there or reports it unused, bind the match with
+   `let` and put the attribute on that `let`. Bind the whole expression
+   instead when moving the match would change when or how often it runs.
 
 A project that weakens `clippy::wildcard_enum_match_arm` (BASE-56) sets the
 lint to `"allow"` in its table and records this exception. `"warn"` is no

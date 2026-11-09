@@ -66,11 +66,15 @@ in a change of its own.
 
 1. Set `standards.version` and `standards.commit` in `rust-standards.toml`
    to the new version.
-2. Copy the new lint into the project's `[workspace.lints]` table, and run
-   the `clippy` step to count the lint's firings.
+2. Copy the new lint into the project's `[workspace.lints]` table at
+   `"warn"`, and run the `clippy` step without `CARGO_BUILD_WARNINGS=deny` to
+   count the lint's firings. A run at `"deny"` undercounts, because an error
+   in one crate stops every crate that depends on it. Then set the lint to
+   `"deny"`.
 3. Handle each firing in one of three ways. Fix the code, keep the code with
    `#[expect(lint, reason = "...")]`, or weaken the lint in the project's
-   table and record the weakening as an exception.
+   table and record the weakening as an exception. For BASE-56 the attribute
+   goes on the `match` or on the statement that holds it, and never on an arm.
 
 A project that weakens `clippy::wildcard_enum_match_arm` (BASE-56) sets the
 lint to `"allow"` in its table and records this exception. `"warn"` is no

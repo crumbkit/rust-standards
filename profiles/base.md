@@ -22,6 +22,7 @@ Every project follows these rules.
 | BASE-14 | A function takes and returns `Option<&T>`, never `&Option<T>`. An exported function follows the rule when it is added or its signature changes. A trait implementation, or a signature another crate's contract fixes, such as a serde `serialize_with` function, follows that contract and carries an `#[expect]` where the lint fires. | `ref_option` for private functions, review for exported ones |
 | BASE-15 | Write a loop with a side effect as a `for` loop, never `for_each`. | `needless_for_each` on a collection's iterator, review for other iterators |
 | BASE-16 | A function takes at most three `bool` parameters. Use an enum for any further choice. | `fn_params_excessive_bools` |
+| BASE-56 | A match on an enum names every variant it handles, so a new variant is a compile error at every match that must consider it. A `_` arm or a bare binding arm that stands for known variants stays only with `#[expect(clippy::wildcard_enum_match_arm, reason = "...")]`. A match on another crate's `#[non_exhaustive]` enum names each known variant and ends in `_`, which the lint accepts. `Option` and `Result` are outside this rule. | `wildcard_enum_match_arm`, review for a `_` arm that stands for exactly one variant |
 
 ## tool
 
@@ -74,7 +75,7 @@ Every project follows these rules.
 | BASE-40 | A new CI check names the failure it catches, why existing checks miss it, its lane and its cost. Prefer a type or compiler check to a text scan. | `**` |
 | BASE-41 | Documents describe current behaviour, and each fact has one home. Plans and logs go in the pull request. | `**/*.md`, `**/*.rs` |
 | BASE-42 | Once a value with an invariant has its type (BASE-31, BASE-32), every function inside the program takes that type, and the raw value appears only where the value leaves the program, such as in a request, a file or a message. The type keeps its fields private, and every way to build it, including `Deserialize`, goes through one checking constructor, for example with `#[serde(try_from = "String")]`. Use `TryFrom` or `FromStr` for a value from one input, and a named constructor such as `Range::new(start, end)` for a value built from several. Do not implement `Deref` to the raw value. A function that takes the raw value must check it again, and a missing check is a defect. | `**/*.rs` |
-| BASE-43 | Model steps that must run in order and hold several invariants, such as a protocol or a multi-stage request, as one type per state. A transition takes `self` and returns the next state, or an enum of the states it can reach, so a step out of order does not compile. A transition computes the next state from values and performs no effect; the caller performs each effect and passes its result to the next transition. Model a linear flow with few invariants as one type and plain functions. | `**/*.rs` |
+| BASE-43 | Model steps that must run in order and hold several invariants, such as a protocol or a multi-stage request, as one type per state. A transition takes `self` and returns the next state, or an enum of the states it can reach, so a step out of order does not compile. A transition computes the next state from values and performs no effect; the caller performs each effect and passes its result to the next transition. Model a linear flow with few invariants as one type and plain functions. A value whose state changes at run time, so that one type per state cannot hold it, follows BASE-57. | `**/*.rs` |
 | BASE-44 | Make each outcome the domain expects, such as a refusal or an empty result, a variant of the operation's outcome enum, carrying what explains it. Keep `Result::Err` for technical failures outside the domain's outcomes, such as an unreachable service or a malformed answer. A checking constructor's refusal (BASE-42) is its `Err`, and the operation that receives the raw value turns it into a variant when the domain expects invalid input. Do not use a general two-way type such as `Either` in place of the outcome enum. | `**/*.rs` |
 | BASE-45 | A type admits only the states the code handles. Where `bool` and `Option` fields can combine into a state the code cannot handle, such as two `Option`s of which exactly one is set, or where a `String` holds one of a few known values, use an enum with one variant per state that holds that state's data. | `**/*.rs` |
 | BASE-46 | Convert a typed value to another type through a conversion between the types, such as a `From` implementation, a `match`, or the target's checking constructor applied to the source's fields. Never format or serialize the whole value and parse the text as the other type. Where no other path exists, such as between two crates' types that share only a text form, return the parse's refusal as an error (BASE-4). | `**/*.rs` |
@@ -86,6 +87,7 @@ Every project follows these rules.
 | BASE-52 | Every plan includes a module diagram. The diagram shows each module that the change adds or touches, marks which are new, and draws the dependencies between them, including dependencies the change adds or removes. It is written in a text format that renders where the plan is read, such as a Mermaid block in the pull request. | `**` |
 | BASE-53 | Write the test first. A change starts with a test that fails for want of the behaviour, and a bug fix starts with a test that reproduces the bug. When no automated test can show the change, such as a change to a document's wording, the pull request says how it was checked. | `**` |
 | BASE-55 | Each limit names the ordered steps that give growth a place to go, each under its own looser limit: a document past its word budget splits into a tree of topic documents with a node cap; a slow job moves to a slower lane with a time cap; code past a size or complexity limit splits into modules or crates. Switching the limit off is never a step. The last step is always the owner's recorded decision to change or retire the limit. Set each threshold with a heuristic that can be rerun, measure it by activity in the governed scope instead of calendar time, and start with a lenient default until there is data. | `**` |
+| BASE-57 | A value that moves between states at run time holds them in one enum, with each state's data in its variant (BASE-45). A transition is a method on the owning type that takes the current state, or `self`, and returns the next state or an enum of the states it can reach. The method performs no effect, and the caller passes each effect's result to the next transition (BASE-43). No code outside the owning module assigns the state field or constructs a state variant, and the module exposes the transitions. A match on the enum names every variant (BASE-56). The owning module's doc comment holds a state table that names each state, event, next state and the crash points between them, and a test covers each row. | `**/*.rs` |
 
 ## Reasons
 
@@ -174,3 +176,17 @@ Every project follows these rules.
   Persistence files are written where the test ran and are not committed, so
   a failing case found in CI is lost. The unit test keeps the case in the
   repository, where every run checks it.
+- BASE-56: A `_` arm still compiles when the enum gains a variant, so the new
+  variant takes the default branch with no warning. In starmap, matches on
+  `Form` ended in `_ => "another type"`, and the new `Form::SocketAddress`
+  took that branch until 63c51fb named it. In another project, a match ending
+  in `_ => "utf8"` labels any encoding added later as UTF-8. Clippy reports
+  a `_` arm that stands for exactly one variant under a different lint,
+  `match_wildcard_for_single_variants`, which the baseline does not turn on,
+  so a reviewer checks that case. An enum used only inside one
+  workspace is not marked `#[non_exhaustive]`, because the mark forces a `_`
+  arm in every other crate of the workspace.
+- BASE-57: State held in `bool` and `Option` fields lets each writer make its
+  own transition, so no single place says which moves are legal. No Clippy
+  lint identifies a field by its role, so a reviewer checks this rule until a
+  tool can find assignments to a state field.

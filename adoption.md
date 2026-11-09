@@ -56,3 +56,31 @@ decision as a control without renaming them.
   deleted in the change that makes it stale.
 - A lint suppressed at the code with `#[expect(lint, reason = "...")]`
   needs no exception. The attribute's reason is the record (BASE-2).
+
+## Taking a version that adds a lint
+
+A project's lint table is its own copy of
+[baseline/lints/base.toml](baseline/lints/base.toml), so a new lint reaches
+the project only when the project copies it. The project takes the version
+in a change of its own.
+
+1. Set `standards.version` and `standards.commit` in `rust-standards.toml`
+   to the new version.
+2. Copy the new lint into the project's `[workspace.lints]` table, and run
+   the `clippy` step to count the lint's firings.
+3. Handle each firing in one of three ways. Fix the code, keep the code with
+   `#[expect(lint, reason = "...")]`, or weaken the lint in the project's
+   table and record the weakening as an exception.
+
+A project that weakens `clippy::wildcard_enum_match_arm` (BASE-56) sets the
+lint to `"allow"` in its table and records this exception. `"warn"` is no
+weaker than `"deny"`, because CI fails on any warning (BASE-1).
+
+```toml
+[[exception]]
+rule = "BASE-56"
+items = ["lint:clippy::wildcard_enum_match_arm"]
+owner = "Luke Randall"
+reason = "The project had 31 wildcard arms on enums when it took this version."
+correction = "Fix the wildcard arms and set the lint back to deny."
+```

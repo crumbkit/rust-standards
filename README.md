@@ -139,5 +139,10 @@ nothing in its place and one with `*/`, so `**/tests.rs` becomes
   marked withdrawn.
 - A project names the version it follows in `rust-standards.toml`
   ([adoption.md](adoption.md)). Nothing upgrades a project automatically.
+- A version that adds a lint names the lint and its rule in its commit
+  message, and in its tag's notes once tags exist, so a project can count the
+  lint's firings before it takes the version.
+- A project takes a version that adds a lint in a change of its own, as
+  [adoption.md](adoption.md#taking-a-version-that-adds-a-lint) describes.
 - Each version will be a tag `v<version>` on main once the first version is
   released.

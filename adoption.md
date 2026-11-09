@@ -65,7 +65,8 @@ the project only when the project copies it. The project takes the version
 in a change of its own.
 
 1. Set `standards.version` and `standards.commit` in `rust-standards.toml`
-   to the new version.
+   to the new version. Until the first tag exists, `standards.version` holds
+   `"draft"` and `standards.commit` names the commit the project takes.
 2. Copy the new lint into the project's `[workspace.lints]` table at
    `"warn"`, and run the `clippy` step without `CARGO_BUILD_WARNINGS=deny` to
    count the lint's firings. A run at `"deny"` undercounts, because an error
@@ -74,7 +75,8 @@ in a change of its own.
 3. Handle each firing in one of three ways. Fix the code, keep the code with
    `#[expect(lint, reason = "...")]`, or weaken the lint in the project's
    table and record the weakening as an exception. For BASE-56 the attribute
-   goes on the `match` or on the statement that holds it, and never on an arm.
+   goes on the statement or tail expression that holds the match, and never
+   on an arm.
 
 A project that weakens `clippy::wildcard_enum_match_arm` (BASE-56) sets the
 lint to `"allow"` in its table and records this exception. `"warn"` is no

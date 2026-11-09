@@ -51,3 +51,10 @@ paths = ["src/store/index.rs"]
 owner = "Luke Randall"
 reason = "The index module had 1,240 lines when notekeeper adopted the standards."
 correction = "Split the index into its reader and its writer when it next changes substantially."
+
+[[exception]]
+rule = "BASE-56"
+items = ["lint:clippy::wildcard_enum_match_arm"]
+owner = "Luke Randall"
+reason = "notekeeper had 31 wildcard arms on enums when it took the version that added this lint, so Cargo.toml sets the lint to allow."
+correction = "Fix the wildcard arms and set the lint back to deny when the store module next changes substantially."

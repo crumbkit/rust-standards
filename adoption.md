@@ -64,8 +64,13 @@ A project's lint table is its own copy of
 the project only when the project copies it. The project takes the version
 in a change of its own.
 
-1. Set `standards.version` and `standards.commit` in `rust-standards.toml`
-   to the new version. Until the first tag exists, `standards.version` holds
+1. Run `git diff <old> <new> -- profiles baseline adoption.md` in this
+   repository, where `<old>` is the map's `standards.commit` and `<new>` is
+   the commit the project takes. Stop and ask the project's owner when the
+   map names a profile that `<new>` lacks. The project takes or excepts every
+   other change that the diff shows, in this same change. Then set
+   `standards.version` and `standards.commit` in `rust-standards.toml` to the
+   new version. Until the first tag exists, `standards.version` holds
    `"draft"` and `standards.commit` names the commit the project takes.
 2. Copy the new lint into the project's `[workspace.lints]` table at
    `"warn"`, and run the `clippy` step without `CARGO_BUILD_WARNINGS=deny` to
@@ -76,7 +81,9 @@ in a change of its own.
    `#[expect(lint, reason = "...")]`, or weaken the lint in the project's
    table and record the weakening as an exception. For BASE-56 the attribute
    goes on the statement or tail expression that holds the match, and never
-   on an arm.
+   on an arm. A tail expression that is a binary operation first binds the
+   match or the whole expression with `let`, and the attribute goes on that
+   statement.
 
 A project that weakens `clippy::wildcard_enum_match_arm` (BASE-56) sets the
 lint to `"allow"` in its table and records this exception. `"warn"` is no

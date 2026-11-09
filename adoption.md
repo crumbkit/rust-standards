@@ -84,7 +84,9 @@ in a change of its own.
    the match is in a function's tail, and never on an arm. When the compiler
    refuses the attribute there or reports it unused, bind the match with
    `let` and put the attribute on that `let`. Bind the whole expression
-   instead when moving the match would change when or how often it runs.
+   instead when moving the match would change when or how often it runs, or
+   how long a temporary in its scrutinee lives. A whole expression of type
+   unit is bound with `let () =`.
 
 A project that weakens `clippy::wildcard_enum_match_arm` (BASE-56) sets the
 lint to `"allow"` in its table and records this exception. `"warn"` is no

@@ -44,7 +44,7 @@ crumbkit does not cover.
 | CLI-12 | Every prompt has a flag that answers it, such as `--yes`. Without a terminal on standard input, or with `--no-input`, a command that would prompt fails with a code that names the flag. | `check_effects`, and a test that runs each prompting command without a terminal |
 | CLI-13 | Each exit code other than 0 is declared in the program's `Guide` with the failures that produce it, so `help exit-codes` documents it. | `check_exit_codes` |
 | CLI-14 | The program prints no colour when `NO_COLOR` is set to a non-empty value. | a test that runs a command that prints colour at a pseudo-terminal with `NO_COLOR=1` and finds no escape codes |
-| CLI-15 | Every binary that people or agents run ships shell completion and an agent skill, and commands that install and check both. `completion install` writes the completion script into the directory where the shell loads completions and edits no startup file, such as `~/.zshrc`. `skills install` writes the program's `SKILL.md`, embedded in the binary and so matched to its version, into each agent skills directory that exists. `completion check` and `skills check` exit with a code other than 0 when an installed copy is missing or differs from what the binary would write. crumbkit's `complete` feature gives `completion install`, `check` and `print`, and crumbkit-skills gives `skills install`, `check` and `print`. [mxv](https://github.com/crumbkit/multiverse/tree/main/crates/mxv) mounts both groups. | a test that installs both into a temporary home directory, runs both checks and expects them to pass, then changes each installed file and expects each check to fail |
+| CLI-15 | Every binary that people or agents run ships shell completion and an agent skill, and commands that install and check both. `completion install` writes the completion script into the directory where the shell loads completions and edits no startup file, such as `~/.zshrc`. `skills install` writes the program's `SKILL.md`, embedded in the binary and so matched to its version, into each agent skills directory that exists. `completion check` and `skills check` exit with a code other than 0 when an installed copy is missing or differs from what the binary would write. | a test that installs both into a temporary home directory, runs both checks and expects them to pass, then changes each installed file and expects each check to fail, and finds no file outside the completion and skill directories changed |
 
 ## review
 
@@ -77,3 +77,5 @@ crumbkit does not cover.
   tells the person to run the install command again after an upgrade. A
   completion install that edits a startup file can break the shell's start,
   and a directory that the shell already reads needs no edit.
+  [mxv](https://github.com/crumbkit/multiverse/tree/main/crates/mxv)
+  mounts both groups and is a working example.

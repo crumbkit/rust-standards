@@ -13,11 +13,12 @@ crumbkit does not cover.
 
 | Crate | What a program uses it for |
 | --- | --- |
-| `crumbkit` | `parse` and `finish`, `Output` and its view flags, `Document`, `Listing` and `Page`, `Failure`, `Code` and `Recovery`, `Guide` and `Leaf`, effects, `--dry-run` and confirmation |
+| `crumbkit` | `parse` and `finish`, `Output` and its view flags, `Document`, `Listing` and `Page`, `Failure`, `Code` and `Recovery`, `Guide` and `Leaf`, effects, `--dry-run` and confirmation, and, through the `complete` feature, shell completion and `completion install`, `check` and `print` |
 | `crumbkit-derive` | `#[derive(Failure)]`, through crumbkit's `derive` feature |
 | `crumbkit-test` | the convention checks, called from ordinary `#[test]` functions |
 | `crumbkit-usage` | the local usage log and the `self usage` command |
 | `crumbkit-aliases` | aliases that a person defines for commands |
+| `crumbkit-skills` | the embedded agent skill and `skills install`, `check` and `print` |
 | `crumbkit-child` | a command that hands the terminal to another program |
 | `crumbkit-markdown` | the Markdown command reference, usually through `cargo crumbkit docs` |
 | `cargo-crumbkit` | `cargo crumbkit weigh` and `cargo crumbkit docs` |
@@ -43,6 +44,7 @@ crumbkit does not cover.
 | CLI-12 | Every prompt has a flag that answers it, such as `--yes`. Without a terminal on standard input, or with `--no-input`, a command that would prompt fails with a code that names the flag. | `check_effects`, and a test that runs each prompting command without a terminal |
 | CLI-13 | Each exit code other than 0 is declared in the program's `Guide` with the failures that produce it, so `help exit-codes` documents it. | `check_exit_codes` |
 | CLI-14 | The program prints no colour when `NO_COLOR` is set to a non-empty value. | a test that runs a command that prints colour at a pseudo-terminal with `NO_COLOR=1` and finds no escape codes |
+| CLI-15 | Every binary that people or agents run ships shell completion and an agent skill, and commands that install and check both. `completion install` writes the completion script into the directory where the shell loads completions and edits no startup file, such as `~/.zshrc`. `skills install` writes the program's `SKILL.md`, embedded in the binary and so matched to its version, into each agent skills directory that exists. `completion check` and `skills check` exit with a code other than 0 when an installed copy is missing or differs from what the binary would write. | a test that installs both into a temporary home directory, runs both checks and expects them to pass, then changes each installed file and expects each check to fail, and finds no file outside the completion and skill directories changed |
 
 ## review
 
@@ -70,3 +72,10 @@ crumbkit does not cover.
   then also holds at a terminal.
 - CLI-12: A prompt with no flag blocks a script or an agent, which has no
   terminal to answer it.
+- CLI-15: An agent learns a program from its skill, so a skill older than
+  the binary teaches commands that fail. A check that fails on a stale copy
+  tells the person to run the install command again after an upgrade. A
+  completion install that edits a startup file can break the shell's start,
+  and a directory that the shell already reads needs no edit.
+  [mxv](https://github.com/crumbkit/multiverse/tree/main/crates/mxv)
+  mounts both groups and is a working example.

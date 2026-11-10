@@ -80,17 +80,29 @@ in a change of its own.
 3. Handle each firing in one of three ways. Fix the code, keep the code with
    `#[expect(lint, reason = "...")]`, or weaken the lint in the project's
    table and record the weakening as an exception. For BASE-56 the attribute
-   goes on the statement that holds the match, or on the tail expression when
-   the match is in a function's tail, and never on an arm. When the compiler
+   names the lint that reported the arm. It goes on the statement that holds
+   the match, or on the tail expression when the match is in a function's
+   tail, and never on an arm. When the compiler
    refuses the attribute there or reports it unused, bind the match with
    `let` and put the attribute on that `let`. Bind the whole expression
    instead when moving the match would change when or how often it runs, or
    how long a temporary in its scrutinee lives. A whole expression of type
    unit is bound with `let () =`.
 
-A project that weakens `clippy::wildcard_enum_match_arm` (BASE-56) sets the
-lint to `"allow"` in its table and records this exception. `"warn"` is no
-weaker than `"deny"`, because CI fails on any warning (BASE-1).
+BASE-56 has two lints, `clippy::wildcard_enum_match_arm` and
+`clippy::match_wildcard_for_single_variants`. A project that took the first
+lint at an earlier commit still has the second lint to take when it moves
+`standards.commit` to a commit that denies it, and it takes that lint by the
+steps above. The second lint reports arms that the first lint does not, so
+the first lint's count says nothing about the second lint's firings.
+
+A project weakens each lint on its own, and the other lint still reports its
+arms. A project that weakens `clippy::wildcard_enum_match_arm` sets the lint
+to `"allow"` in its table and records this exception. `"warn"` is no weaker
+than `"deny"`, because CI fails on any warning (BASE-1). A project that
+weakens `clippy::match_wildcard_for_single_variants` does the same and names
+`lint:clippy::match_wildcard_for_single_variants` in `items`. A project that
+weakens both lints may list both in one exception.
 
 ```toml
 [[exception]]

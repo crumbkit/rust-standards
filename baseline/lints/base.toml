@@ -38,3 +38,4 @@ ref_option = "deny"                      # BASE-14
 needless_for_each = "deny"               # BASE-15
 fn_params_excessive_bools = "deny"       # BASE-16
 wildcard_enum_match_arm = "deny"         # BASE-56
+match_wildcard_for_single_variants = "deny" # BASE-56

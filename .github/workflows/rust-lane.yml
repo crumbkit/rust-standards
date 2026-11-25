@@ -4,14 +4,17 @@
 #
 #   uses: crumbkit/rust-standards/.github/workflows/rust-lane.yml@<commit>
 #
-# templates/ci.yml is such a caller. Dependabot moves the commit.
+# templates/ci.yml is such a caller. The project moves the commit by hand,
+# together with its map's `standards.commit`, when it takes a new version
+# (adoption.md). The template's dependabot.yml ignores this repository, so
+# Dependabot never moves the commit on its own.
 name: rust-lane
 
 on:
   workflow_call:
     inputs:
       library:
-        description: Adds the `features` step, for a project that adopts the library profile (LIB-5).
+        description: Adds the `rustdoc` and `features` steps, for a project that adopts the library profile (LIB-2, LIB-5).
         type: boolean
         default: false
       timeout-minutes:
@@ -116,23 +119,26 @@ jobs:
         run: cargo clippy --locked --workspace --all-targets --all-features
       - name: tests
         run: cargo nextest run --locked --workspace --all-features
-      # Cargo refuses `--doc` in a workspace with no library target, so the
-      # `doctests` and `rustdoc` steps run only when a package has one.
-      - name: library targets
+      # Cargo refuses `--doc` in a workspace with no target that has
+      # doctests, so the `doctests` step runs only when cargo metadata
+      # reports such a target.
+      - name: doctest targets
         id: targets
         run: |
           count=$(cargo metadata --locked --no-deps --format-version 1 \
-            | jq '[.packages[].targets[].kind[] | select(. == "lib" or . == "rlib" or . == "dylib" or . == "proc-macro")] | length')
+            | jq '[.packages[].targets[] | select(.doctest)] | length')
           if [ "$count" -gt 0 ]; then
-            echo "library=true" >> "$GITHUB_OUTPUT"
+            echo "doctests=true" >> "$GITHUB_OUTPUT"
           else
-            echo "library=false" >> "$GITHUB_OUTPUT"
+            echo "doctests=false" >> "$GITHUB_OUTPUT"
           fi
       - name: doctests
-        if: steps.targets.outputs.library == 'true'
+        if: steps.targets.outputs.doctests == 'true'
         run: cargo test --locked --doc --workspace --all-features
+      # A project that adopts the library profile checks its doc comments and
+      # intra-doc links with rustdoc (LIB-2).
       - name: rustdoc
-        if: steps.targets.outputs.library == 'true'
+        if: inputs.library
         run: cargo doc --locked --workspace --no-deps
         env:
           RUSTDOCFLAGS: -D warnings

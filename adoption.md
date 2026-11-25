@@ -49,7 +49,8 @@ decision as a control without renaming them.
   with branch protection, because the repository's files do not show it. A
   project that moves its lane to the shared workflow changes the required
   check to `lane / lane` in the same change, because a pull request otherwise
-  waits for a check that never reports.
+  waits for a check that never reports. The same change renames the check in
+  the map's `lanes` decision, so the decision still matches branch protection.
 - A project may record any stricter rule it sets for itself, such as a lower
   file length limit, as a decision.
 

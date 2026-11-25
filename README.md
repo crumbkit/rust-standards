@@ -66,7 +66,7 @@ macOS build. The shared workflow installs one version of each tool, runs on
 
 | Input | Default | Effect |
 | --- | --- | --- |
-| `library` | `false` | `true` adds the `features` step, for a project that adopts `library` |
+| `library` | `false` | `true` adds the `rustdoc` and `features` steps, for a project that adopts `library` |
 | `timeout-minutes` | `10` | the lane's time budget, which the map's `lanes` decision states |
 | `working-directory` | `.` | the directory of the Cargo workspace, relative to the repository's root |
 
@@ -86,11 +86,12 @@ read the dependency sources, so they run after those are fetched and before
 | `clippy` | `CARGO_BUILD_WARNINGS=deny cargo clippy --locked --workspace --all-targets --all-features` | always |
 | `tests` | `cargo nextest run --locked --workspace --all-features` | always |
 | `doctests` | `cargo test --locked --doc --workspace --all-features` | the workspace has a library target, because Cargo refuses `--doc` without one |
-| `rustdoc` | `RUSTDOCFLAGS="-D warnings" cargo doc --locked --workspace --no-deps` | the workspace has a library target |
+| `rustdoc` | `RUSTDOCFLAGS="-D warnings" cargo doc --locked --workspace --no-deps` | the project uses `lints/library.toml` |
 | `features` | `CARGO_BUILD_WARNINGS=deny cargo hack clippy --locked --workspace --each-feature --all-targets` | the project adopts `library` (LIB-5) |
 
-The shared workflow runs these steps in this order, and checks for a library
-target itself. gitleaks reads `.gitleaks.toml` and `.gitleaksignore` at the
+The shared workflow runs these steps in this order. It checks for a target
+with doctests itself, and runs `rustdoc` and `features` when the caller passes
+`library: true`. gitleaks reads `.gitleaks.toml` and `.gitleaksignore` at the
 repository's root, so a project clears a false finding with an entry in its
 own `.gitleaksignore`.
 

@@ -32,7 +32,7 @@ baseline/
 └── nextest.toml               .config/nextest.toml
 templates/
 ├── ci.yml                     a GitHub Actions workflow that calls the shared lane and runs the advisory check
-├── dependabot.yml             weekly updates of every pin (BASE-26)
+├── dependabot.yml             weekly updates of every pin except the lane's commit, which moves by hand with standards.commit (BASE-26)
 └── rust-toolchain.toml        an exact toolchain pin (BASE-26)
 examples/
 └── notekeeper.toml            a worked adoption map for a small CLI
@@ -85,7 +85,7 @@ read the dependency sources, so they run after those are fetched and before
 | `shear` | `cargo shear` | always |
 | `clippy` | `CARGO_BUILD_WARNINGS=deny cargo clippy --locked --workspace --all-targets --all-features` | always |
 | `tests` | `cargo nextest run --locked --workspace --all-features` | always |
-| `doctests` | `cargo test --locked --doc --workspace --all-features` | the workspace has a library target, because Cargo refuses `--doc` without one |
+| `doctests` | `cargo test --locked --doc --workspace --all-features` | cargo metadata reports a target with doctests, because Cargo refuses `--doc` without one |
 | `rustdoc` | `RUSTDOCFLAGS="-D warnings" cargo doc --locked --workspace --no-deps` | the project uses `lints/library.toml` |
 | `features` | `CARGO_BUILD_WARNINGS=deny cargo hack clippy --locked --workspace --each-feature --all-targets` | the project adopts `library` (LIB-5) |
 

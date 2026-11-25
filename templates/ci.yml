@@ -32,7 +32,7 @@ jobs:
     uses: crumbkit/rust-standards/.github/workflows/rust-lane.yml@<commit>
     with:
       # A project that adopts the library profile sets `library: true`,
-      # which adds the `features` step (LIB-5).
+      # which adds the `rustdoc` and `features` steps (LIB-2, LIB-5).
       library: false
       # The pull-request lane's time budget (BASE-25).
       timeout-minutes: 10

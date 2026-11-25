@@ -38,9 +38,18 @@ decision as a control without renaming them.
 | `unsafe` | the project uses `unsafe` (BASE-3) | the modules that use it and the invariant each one upholds |
 | `release-profile` | the project ships a binary (BASE-27) | the `lto`, `codegen-units` and `strip` settings of `[profile.release]` |
 
+- The project's pull-request lane is a job named `lane` that calls the
+  shared workflow, as [templates/ci.yml](templates/ci.yml) does. The `uses:`
+  line names this repository's
+  `.github/workflows/rust-lane.yml` at the commit that `standards.commit`
+  names, so taking a new version moves both together. The job's check is
+  `lane / lane`.
 - A merge waits for a check only when branch protection requires it. The
   `lanes` decision names the required checks, and a reviewer compares them
-  with branch protection, because the repository's files do not show it.
+  with branch protection, because the repository's files do not show it. A
+  project that moves its lane to the shared workflow changes the required
+  check to `lane / lane` in the same change, because a pull request otherwise
+  waits for a check that never reports.
 - A project may record any stricter rule it sets for itself, such as a lower
   file length limit, as a decision.
 
@@ -64,13 +73,14 @@ A project's lint table is its own copy of
 the project only when the project copies it. The project takes the version
 in a change of its own.
 
-1. Run `git diff <old> <new> -- profiles baseline adoption.md` in this
+1. Run `git diff <old> <new> -- profiles baseline adoption.md .github/workflows/rust-lane.yml` in this
    repository, where `<old>` is the map's `standards.commit` and `<new>` is
    the commit the project takes. Stop and ask the project's owner when the
    map names a profile that `<new>` lacks. The project takes or excepts every
    other change that the diff shows, in this same change. Then set
    `standards.version` and `standards.commit` in `rust-standards.toml` to the
-   new version. Until the first tag exists, `standards.version` holds
+   new version, and move the commit on the `lane` job's `uses:` line to
+   `<new>`. Until the first tag exists, `standards.version` holds
    `"draft"` and `standards.commit` names the commit the project takes.
 2. Copy the new lint into the project's `[workspace.lints]` table at
    `"warn"`, and run the `clippy` step without `CARGO_BUILD_WARNINGS=deny` to

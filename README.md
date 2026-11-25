@@ -11,6 +11,9 @@ The rules are a draft. Nothing here is versioned or tagged yet.
 
 ```text
 README.md                      profiles, lanes, check tiers, where rules apply, versions
+.github/workflows/
+├── rust-lane.yml              the shared pull-request lane that every project calls
+└── self-test.yml              runs rust-lane.yml on tests/fixture
 AGENTS.md                      rules for editing this repository
 adoption.md                    the rust-standards.toml format
 profiles/
@@ -28,11 +31,13 @@ baseline/
 ├── deny.toml                  cargo-deny configuration
 └── nextest.toml               .config/nextest.toml
 templates/
-├── ci.yml                     a GitHub Actions workflow that runs the lanes below
+├── ci.yml                     a GitHub Actions workflow that calls the shared lane and runs the advisory check
 ├── dependabot.yml             weekly updates of every pin (BASE-26)
 └── rust-toolchain.toml        an exact toolchain pin (BASE-26)
 examples/
 └── notekeeper.toml            a worked adoption map for a small CLI
+tests/
+└── fixture/                   a crate that meets the baseline, for the self-test
 ```
 
 ## Profiles
@@ -50,25 +55,44 @@ Every project runs these steps on each pull request (BASE-25). CI and any
 local task runner use the same step names, so a failure reads the same in
 both places.
 
+A project runs the lane by calling the shared workflow
+[.github/workflows/rust-lane.yml](.github/workflows/rust-lane.yml) from a job
+named `lane`, so every project's pull request shows the same check,
+`lane / lane`. [templates/ci.yml](templates/ci.yml) is such a caller. A
+project names the workflow at the commit of this repository that its map's
+`standards.commit` names, and adds only the jobs its app needs, such as a
+macOS build. The shared workflow installs one version of each tool, runs on
+`ubuntu-24.04`, and takes three inputs.
+
+| Input | Default | Effect |
+| --- | --- | --- |
+| `library` | `false` | `true` adds the `features` step, for a project that adopts `library` |
+| `timeout-minutes` | `10` | the lane's time budget, which the map's `lanes` decision states |
+| `working-directory` | `.` | the directory of the Cargo workspace, relative to the repository's root |
+
 Within one job the steps run cheapest first, so a pull request fails as early
-as it can. `format` and `workflows` read only the source
+as it can. `format`, `workflows` and `secrets` read only the source
 and run before anything fetches or builds dependencies. `deny` and `shear`
 read the dependency sources, so they run after those are fetched and before
-`clippy`. A project may split the steps across parallel jobs instead.
+`clippy`.
 
 | Step | Command | Runs when |
 | --- | --- | --- |
 | `format` | `cargo fmt --check` | always |
-| `workflows` | `zizmor .` | the project has `.github/workflows/` |
+| `workflows` | `zizmor .` | always |
+| `secrets` | `gitleaks git --log-opts=<commits>`, where `<commits>` are the commits that the pull request or push adds | always |
 | `deny` | `cargo deny --locked check bans licenses sources` | always |
 | `shear` | `cargo shear` | always |
 | `clippy` | `CARGO_BUILD_WARNINGS=deny cargo clippy --locked --workspace --all-targets --all-features` | always |
 | `tests` | `cargo nextest run --locked --workspace --all-features` | always |
 | `doctests` | `cargo test --locked --doc --workspace --all-features` | the workspace has a library target, because Cargo refuses `--doc` without one |
-| `rustdoc` | `RUSTDOCFLAGS="-D warnings" cargo doc --locked --workspace --no-deps` | the project uses `lints/library.toml` |
+| `rustdoc` | `RUSTDOCFLAGS="-D warnings" cargo doc --locked --workspace --no-deps` | the workspace has a library target |
 | `features` | `CARGO_BUILD_WARNINGS=deny cargo hack clippy --locked --workspace --each-feature --all-targets` | the project adopts `library` (LIB-5) |
 
-[templates/ci.yml](templates/ci.yml) runs these steps in this order.
+The shared workflow runs these steps in this order, and checks for a library
+target itself. gitleaks reads `.gitleaks.toml` and `.gitleaksignore` at the
+repository's root, so a project clears a false finding with an entry in its
+own `.gitleaksignore`.
 
 ## Scheduled and release checks
 

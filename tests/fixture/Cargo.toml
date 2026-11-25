@@ -1,0 +1,64 @@
+# A crate that meets the baseline. The self-test workflow runs the shared
+# pull-request lane against it. deny.toml, clippy.toml, rust-toolchain.toml
+# and .config/nextest.toml link to the baseline and template files, and the
+# lint tables below copy lints/base.toml and lints/library.toml.
+[package]
+name = "rust-lane-fixture"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.99.1"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[features]
+# Adds `double`, which the `features` step builds alone.
+double = []
+
+[lints]
+workspace = true
+
+[workspace]
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+unreachable_pub = "warn"
+missing_debug_implementations = "warn"
+missing_docs = "deny"
+
+[workspace.lints.rustdoc]
+broken_intra_doc_links = "deny"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+allow_attributes = "deny"
+allow_attributes_without_reason = "deny"
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+todo = "deny"
+unimplemented = "deny"
+dbg_macro = "deny"
+unreachable = "deny"
+indexing_slicing = "deny"
+cast_possible_truncation = "deny"
+cast_sign_loss = "deny"
+cast_possible_wrap = "deny"
+cast_precision_loss = "deny"
+cast_lossless = "deny"
+disallowed_methods = "deny"
+disallowed_types = "deny"
+disallowed_macros = "deny"
+print_stdout = "deny"
+print_stderr = "deny"
+mod_module_files = "deny"
+too_many_lines = "deny"
+wildcard_imports = "deny"
+enum_glob_use = "deny"
+ref_option = "deny"
+needless_for_each = "deny"
+fn_params_excessive_bools = "deny"
+wildcard_enum_match_arm = "deny"
+match_wildcard_for_single_variants = "deny"
+missing_errors_doc = "deny"
+missing_panics_doc = "deny"
+must_use_candidate = "deny"

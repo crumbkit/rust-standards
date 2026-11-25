@@ -1,0 +1,36 @@
+# The standards' own check. It calls the shared pull-request lane,
+# rust-lane.yml, on the fixture crate in tests/fixture, once as an
+# application and once as a library, so a change to the lane runs here before
+# any project takes it.
+name: self-test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Each job grants only the permissions it needs.
+permissions: {}
+
+# A new push cancels the run for the previous push, because the newer run
+# checks the same changes and more.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  application:
+    permissions:
+      contents: read # actions/checkout reads the repository.
+    uses: $/.github/workflows/rust-lane.yml
+    with:
+      working-directory: tests/fixture
+
+  library:
+    permissions:
+      contents: read # actions/checkout reads the repository.
+    uses: $/.github/workflows/rust-lane.yml
+    with:
+      working-directory: tests/fixture
+      library: true

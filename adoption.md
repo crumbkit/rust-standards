@@ -99,12 +99,13 @@ in a change of its own.
    instead when moving the match would change when or how often it runs, or
    how long a temporary in its scrutinee lives. A whole expression of type
    unit is bound with `let () =`. To fix an arm on another crate's
-   `#[non_exhaustive]` enum, give the variant that Clippy names an arm of its
-   own and keep a separate `_ =>` arm after it. Do not take Clippy's
-   suggestion `E::C | _`, because Clippy never checks that or-pattern again.
-   When the arm binds the value, as `other @ _` or `other` does, match on a
-   reference and use the value in the arm's body, because Clippy does not
-   count `other @ E::C` as naming `E::C`.
+   `#[non_exhaustive]` enum, name the variant that Clippy reports in an arm
+   that does not include `_`, and keep the separate `_` or binding arm after
+   it. Do not take Clippy's suggestion `E::C | _` or `other @ E::C | _`,
+   because Clippy never reports that or-pattern again. When a named arm
+   needs the value, write the variant without an `@` binding and use the
+   matched variable in the arm's body, because Clippy does not count
+   `other @ Variant` as naming the variant.
 
 BASE-56 has two lints, `clippy::wildcard_enum_match_arm` and
 `clippy::match_wildcard_for_single_variants`. A project that took the first
